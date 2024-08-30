@@ -1,8 +1,10 @@
+use crate::database::schemas;
 use axum::{routing::get, Router};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
-pub mod api;
+mod api;
+mod database;
 
 #[tokio::main]
 async fn main() {
@@ -12,7 +14,7 @@ async fn main() {
             title = "tenwinterforty - Motorcycle Maintenance Tracking System",
             description = "tenwinterforty is a Motorcycle Maintenace Tracking System (MMTS) used to track all maintenance activities of your motorcycles",
         ),
-        components(schemas(api::MaintenanceActivity, api::Motorcycle))
+        components(schemas(schemas::MaintenanceActivity, schemas::Motorcycle))
     )]
     struct ApiDoc;
 
