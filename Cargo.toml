@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 serde = "1.0.209"
-axum = "0.7.5"
+axum = { version = "0.7.5", features = ["json"] }
 time = { version = "0.3.36", features = ["serde"] }
 tokio = { version = "1", features = ["full"] }
 utoipa = "4.2.3"

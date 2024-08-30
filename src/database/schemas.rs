@@ -1,4 +1,5 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 use time::Date;
 use utoipa::ToSchema;
 
@@ -9,19 +10,21 @@ pub struct ReplacedPart {
     type_: String,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(Debug, ToSchema, Serialize, Deserialize)]
 pub struct Motorcycle {
-    id: u64,
+    #[schema(value_type = String)]
+    id: Thing,
     make: String,
     model: String,
-    year: u16,
-    displacement: u64,
+    year: Option<u64>,
+    displacement: Option<u64>,
+    license_plate: Option<String>,
 }
 
 #[derive(ToSchema, Serialize)]
 pub struct MaintenanceActivity {
-    id: u64,
-    motorcycle_id: u64,
+    id: Option<Thing>,
+    motorcycle_id: Option<Thing>,
     #[schema(value_type = String)]
     date: Date,
     odometer_reading: u64,
