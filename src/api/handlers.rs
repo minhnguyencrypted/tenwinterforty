@@ -20,10 +20,7 @@ pub async fn get_motorcycle_by_id(
         },
         Err(err) => {
             println!("{:#?}", err);
-            Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(String::from("Internal server error")),
-            ))
+            Err((StatusCode::BAD_REQUEST, Json(String::from("Bad request"))))
         }
     }
 }
@@ -44,10 +41,7 @@ pub async fn create_motorcycle(
         }
         Err(err) => {
             println!("{:#?}", err);
-            Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(String::from("Internal server error")),
-            ))
+            Err((StatusCode::BAD_REQUEST, Json(String::from("Bad request"))))
         }
     }
 }
