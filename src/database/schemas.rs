@@ -13,12 +13,12 @@ pub struct ReplacedPart {
 #[derive(Debug, ToSchema, Serialize, Deserialize)]
 pub struct Motorcycle {
     #[schema(value_type = String)]
-    id: Thing,
-    make: String,
-    model: String,
-    year: Option<u64>,
-    displacement: Option<u64>,
-    license_plate: Option<String>,
+    pub id: Option<Thing>,
+    pub make: String,
+    pub model: String,
+    pub year: Option<u64>,
+    pub displacement: Option<u64>,
+    pub license_plate: Option<String>,
 }
 
 #[derive(ToSchema, Serialize)]

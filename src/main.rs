@@ -1,6 +1,9 @@
 use crate::database::connect_db;
 use crate::database::schemas;
-use axum::{routing::get, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -23,7 +26,8 @@ async fn main() {
 
     let app = Router::new()
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
-        .route("/motorcycle/:id", get(api::handlers::get_motorcycle_by_id));
+        .route("/motorcycle/:id", get(api::handlers::get_motorcycle_by_id))
+        .route("/motorcycle", post(api::handlers::create_motorcycle));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     axum::serve(listener, app).await.unwrap();
