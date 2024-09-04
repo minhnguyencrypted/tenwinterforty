@@ -14,8 +14,8 @@ pub struct ReplacedPart {
 pub struct Motorcycle {
     #[schema(value_type = String)]
     pub id: Option<Thing>,
-    pub make: String,
-    pub model: String,
+    pub make: Option<String>,
+    pub model: Option<String>,
     pub year: Option<u64>,
     pub displacement: Option<u64>,
     pub license_plate: Option<String>,

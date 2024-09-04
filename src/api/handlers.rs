@@ -51,3 +51,29 @@ pub async fn create_motorcycle(
         }
     }
 }
+
+pub async fn update_motorcycle(
+    Path(id): Path<String>,
+    Json(payload): Json<Motorcycle>,
+) -> Result<impl IntoResponse, (StatusCode, Json<String>)> {
+    let db = AppDatabase::new();
+    match db.get_motorcycle(&id).await {
+        Ok(mc) => match mc {
+            Some(_) => match db.update_motorcycle(&id, payload).await {
+                Ok(response) => Ok((StatusCode::OK, response.unwrap().id.to_owned().to_string())),
+                Err(err) => {
+                    println!("{:#?}", err);
+                    Err((StatusCode::BAD_REQUEST, Json(String::from("Bad request"))))
+                }
+            },
+            None => Err((
+                StatusCode::NOT_FOUND,
+                Json(format!("Motorcycle with id {} not found", &id)),
+            )),
+        },
+        Err(err) => {
+            println!("{:#?}", err);
+            Err((StatusCode::BAD_REQUEST, Json(String::from("Bad request"))))
+        }
+    }
+}
