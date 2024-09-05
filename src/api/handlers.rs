@@ -151,3 +151,28 @@ pub async fn create_maintenance_record_by_mc_id(
         }
     }
 }
+
+pub async fn get_maintenance_records_by_mc_id(
+    Path(id): Path<String>,
+) -> Result<(StatusCode, Json<Vec<MaintenanceRecord>>), (StatusCode, Json<String>)> {
+    let db = AppDatabase::new();
+    match db.get_motorcycle(&id).await {
+        Ok(opt_mc) => match opt_mc {
+            Some(_) => match db.get_maintenance_record_by_mc_id(&id).await {
+                Ok(mtn_records) => Ok((StatusCode::OK, Json(mtn_records))),
+                Err(err) => {
+                    eprintln!("{:#?}", err);
+                    Err((StatusCode::BAD_REQUEST, Json("Bad request".to_string())))
+                }
+            },
+            None => Err((
+                StatusCode::NOT_FOUND,
+                Json(format!("Motorcycle with id {} not found", id)),
+            )),
+        },
+        Err(err) => {
+            eprintln!("{:#?}", err);
+            Err((StatusCode::BAD_REQUEST, Json("Bad request".to_string())))
+        }
+    }
+}

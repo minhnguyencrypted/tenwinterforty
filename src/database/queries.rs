@@ -2,6 +2,7 @@ use super::{
     schemas::{MaintenanceRecord, Motorcycle},
     DB,
 };
+use surrealdb::sql::Id;
 use surrealdb::{sql::Thing, Error};
 
 pub struct AppDatabase {
@@ -95,10 +96,14 @@ impl AppDatabase {
         &self,
         mc_id: &str,
     ) -> Result<Vec<MaintenanceRecord>, Error> {
+        let mc_thing = Thing {
+            tb: self.mc_table.clone(),
+            id: Id::String(mc_id.to_string()),
+        };
         let mut result = DB
-            .query("select * from $mtn_table where motorcycle_id = $mc_id")
+            .query("select * from type::table($mtn_table) where motorcycle_id = $mc_thing")
             .bind(("mtn_table", &self.mtn_table))
-            .bind(("mc_id", mc_id))
+            .bind(("mc_thing", mc_thing))
             .await;
         match result {
             Ok(mut resp) => match resp.take(0) {

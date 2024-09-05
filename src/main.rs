@@ -38,6 +38,10 @@ async fn main() {
         .route(
             "/motorcycle/:id/maintenance",
             post(handlers::create_maintenance_record_by_mc_id),
+        )
+        .route(
+            "/motorcycle/:id/maintenance",
+            get(handlers::get_maintenance_records_by_mc_id),
         );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
