@@ -22,7 +22,7 @@ pub struct Motorcycle {
 }
 
 #[derive(Debug, ToSchema, Serialize, Deserialize)]
-pub struct MaintenanceLog {
+pub struct MaintenanceRecord {
     pub id: Option<Thing>,
     pub motorcycle_id: Option<Thing>,
     #[schema(value_type = String)]

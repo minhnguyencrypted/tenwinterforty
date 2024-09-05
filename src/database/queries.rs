@@ -1,7 +1,8 @@
-use super::schemas::{MaintenanceLog, Motorcycle};
-use super::DB;
-use surrealdb::sql::Thing;
-use surrealdb::Error;
+use super::{
+    schemas::{MaintenanceRecord, Motorcycle},
+    DB,
+};
+use surrealdb::{sql::Thing, Error};
 
 pub struct AppDatabase {
     motorcycle_table: String,
@@ -67,9 +68,9 @@ impl AppDatabase {
 
     pub async fn create_maintenance_log(
         &self,
-        maintenance_log: MaintenanceLog,
+        maintenance_log: MaintenanceRecord,
     ) -> Result<Vec<Thing>, Error> {
-        let response: Result<Vec<MaintenanceLog>, Error> = DB
+        let response: Result<Vec<MaintenanceRecord>, Error> = DB
             .create(&self.maintenance_log)
             .content(maintenance_log)
             .await;
@@ -83,11 +84,32 @@ impl AppDatabase {
         }
     }
 
-    pub async fn get_maintenance_log(&self, id: &str) -> Result<Option<MaintenanceLog>, Error> {
-        let response: Result<Option<MaintenanceLog>, Error> =
+    pub async fn get_maintenance_log(&self, id: &str) -> Result<Option<MaintenanceRecord>, Error> {
+        let response: Result<Option<MaintenanceRecord>, Error> =
             DB.select((&self.maintenance_log, id)).await;
         match response {
             Ok(opt_log) => Ok(opt_log),
+            Err(err) => Err(err),
+        }
+    }
+
+    pub async fn get_maintenance_log_by_mc_id(
+        &self,
+        mc_id: &str,
+    ) -> Result<Vec<MaintenanceRecord>, Error> {
+        let mut result = DB
+            .query("select * from $mtn_table where motorcycle_id = $mc_id")
+            .bind(("mtn_table", &self.maintenance_log))
+            .bind(("mc_id", mc_id))
+            .await;
+        match result {
+            Ok(mut resp) => match resp.take(0) {
+                Ok(records) => {
+                    let mtn_records: Vec<MaintenanceRecord> = records;
+                    Ok(mtn_records)
+                }
+                Err(err) => Err(err),
+            },
             Err(err) => Err(err),
         }
     }

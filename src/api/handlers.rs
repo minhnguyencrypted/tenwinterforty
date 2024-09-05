@@ -1,9 +1,8 @@
-use crate::database::schemas::MaintenanceLog;
-use crate::database::{queries::AppDatabase, schemas::Motorcycle};
-use axum::extract::Path;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
-use axum::Json;
+use crate::database::{
+    queries::AppDatabase,
+    schemas::{MaintenanceRecord, Motorcycle},
+};
+use axum::{extract::Path, http::StatusCode, response::IntoResponse, Json};
 use chrono::Local;
 use surrealdb::sql::Thing;
 
@@ -114,7 +113,7 @@ pub async fn get_maintenance_log(
 }
 
 pub async fn create_maintenance_log(
-    Json(mut payload): Json<MaintenanceLog>,
+    Json(mut payload): Json<MaintenanceRecord>,
 ) -> Result<(StatusCode, Json<Vec<Thing>>), (StatusCode, Json<String>)> {
     let db = AppDatabase::new();
     match payload.date {
@@ -132,7 +131,7 @@ pub async fn create_maintenance_log(
 
 pub async fn create_maintenance_log_by_mc_id(
     Path(id): Path<String>,
-    Json(mut payload): Json<MaintenanceLog>,
+    Json(mut payload): Json<MaintenanceRecord>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     let db = AppDatabase::new();
     match db.get_motorcycle(&id).await {

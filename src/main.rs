@@ -1,6 +1,6 @@
 use crate::database::{
     connect_db,
-    schemas::{MaintenanceLog, Motorcycle},
+    schemas::{MaintenanceRecord, Motorcycle},
 };
 use api::handlers;
 use axum::{
@@ -21,7 +21,7 @@ async fn main() {
             title = "tenwinterforty - Motorcycle Maintenance Tracking System",
             description = "tenwinterforty is a Motorcycle Maintenace Tracking System (MMTS) used to track all maintenance activities of your motorcycles",
         ),
-        components(schemas(MaintenanceLog, Motorcycle))
+        components(schemas(MaintenanceRecord, Motorcycle))
     )]
     struct ApiDoc;
 
