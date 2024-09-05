@@ -1,7 +1,7 @@
 use crate::database::connect_db;
 use crate::database::schemas;
 use axum::{
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Router,
 };
 use utoipa::OpenApi;
@@ -28,7 +28,8 @@ async fn main() {
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/motorcycle/:id", get(api::handlers::get_motorcycle_by_id))
         .route("/motorcycle", post(api::handlers::create_motorcycle))
-        .route("/motorcycle/:id", put(api::handlers::update_motorcycle));
+        .route("/motorcycle/:id", put(api::handlers::update_motorcycle))
+        .route("/motorcycle/:id", delete(api::handlers::delete_motorcycle));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     axum::serve(listener, app).await.unwrap();

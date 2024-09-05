@@ -50,4 +50,16 @@ impl AppDatabase {
             Err(err) => Err(err),
         }
     }
+
+    pub async fn delete_motorcycle(&self, id: &str) -> Result<Option<Thing>, Error> {
+        let response: Result<Option<Motorcycle>, Error> =
+            DB.delete((&self.motorcycle_table, id)).await;
+        match response {
+            Ok(mc) => match mc {
+                Some(mc) => Ok(mc.id),
+                None => Ok(None),
+            },
+            Err(err) => Err(err),
+        }
+    }
 }

@@ -71,3 +71,22 @@ pub async fn update_motorcycle(
         }
     }
 }
+
+pub async fn delete_motorcycle(
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, impl IntoResponse> {
+    let db = AppDatabase::new();
+    match db.delete_motorcycle(&id).await {
+        Ok(mc_thing) => match mc_thing {
+            Some(_) => Ok(StatusCode::NO_CONTENT),
+            None => Err((
+                StatusCode::NOT_FOUND,
+                Json(format!("Motorcycle with id {} not found", &id)),
+            )),
+        },
+        Err(err) => {
+            println!("{:#?}", err);
+            Err((StatusCode::BAD_REQUEST, Json(String::from("Bad request"))))
+        }
+    }
+}
