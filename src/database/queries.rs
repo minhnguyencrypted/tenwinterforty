@@ -1,16 +1,18 @@
-use super::schemas::Motorcycle;
+use super::schemas::{MaintenanceLog, Motorcycle};
 use super::DB;
 use surrealdb::sql::Thing;
 use surrealdb::Error;
 
 pub struct AppDatabase {
     motorcycle_table: String,
+    maintenance_log: String,
 }
 
 impl AppDatabase {
     pub fn new() -> Self {
         AppDatabase {
             motorcycle_table: String::from("motorcycles"),
+            maintenance_log: String::from("maintenance"),
         }
     }
 
@@ -59,6 +61,33 @@ impl AppDatabase {
                 Some(mc) => Ok(mc.id),
                 None => Ok(None),
             },
+            Err(err) => Err(err),
+        }
+    }
+
+    pub async fn create_maintenance_log(
+        &self,
+        maintenance_log: MaintenanceLog,
+    ) -> Result<Vec<Thing>, Error> {
+        let response: Result<Vec<MaintenanceLog>, Error> = DB
+            .create(&self.maintenance_log)
+            .content(maintenance_log)
+            .await;
+        match response {
+            Ok(logs) => {
+                let log_things: Vec<Thing> =
+                    logs.iter().map(|log| log.id.to_owned().unwrap()).collect();
+                Ok(log_things)
+            }
+            Err(err) => Err(err),
+        }
+    }
+
+    pub async fn get_maintenance_log(&self, id: &str) -> Result<Option<MaintenanceLog>, Error> {
+        let response: Result<Option<MaintenanceLog>, Error> =
+            DB.select((&self.maintenance_log, id)).await;
+        match response {
+            Ok(opt_log) => Ok(opt_log),
             Err(err) => Err(err),
         }
     }

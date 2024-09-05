@@ -1,5 +1,7 @@
-use crate::database::connect_db;
-use crate::database::schemas;
+use crate::database::{
+    connect_db,
+    schemas::{MaintenanceLog, Motorcycle},
+};
 use axum::{
     routing::{delete, get, post, put},
     Router,
@@ -18,7 +20,7 @@ async fn main() {
             title = "tenwinterforty - Motorcycle Maintenance Tracking System",
             description = "tenwinterforty is a Motorcycle Maintenace Tracking System (MMTS) used to track all maintenance activities of your motorcycles",
         ),
-        components(schemas(schemas::MaintenanceActivity, schemas::Motorcycle))
+        components(schemas(MaintenanceLog, Motorcycle))
     )]
     struct ApiDoc;
 
@@ -29,7 +31,9 @@ async fn main() {
         .route("/motorcycle/:id", get(api::handlers::get_motorcycle_by_id))
         .route("/motorcycle", post(api::handlers::create_motorcycle))
         .route("/motorcycle/:id", put(api::handlers::update_motorcycle))
-        .route("/motorcycle/:id", delete(api::handlers::delete_motorcycle));
+        .route("/motorcycle/:id", delete(api::handlers::delete_motorcycle))
+        .route("/maintenance/:id", get(api::handlers::get_maintenance_log))
+        .route("/maintenance", post(api::handlers::create_maintenance_log));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     axum::serve(listener, app).await.unwrap();

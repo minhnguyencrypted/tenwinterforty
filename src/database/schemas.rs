@@ -1,9 +1,9 @@
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::Thing;
-use time::Date;
 use utoipa::ToSchema;
 
-#[derive(ToSchema, Serialize)]
+#[derive(Debug, ToSchema, Serialize, Deserialize)]
 pub struct ReplacedPart {
     name: String,
     #[serde(rename = "type")]
@@ -21,14 +21,14 @@ pub struct Motorcycle {
     pub license_plate: Option<String>,
 }
 
-#[derive(ToSchema, Serialize)]
-pub struct MaintenanceActivity {
-    id: Option<Thing>,
-    motorcycle_id: Option<Thing>,
+#[derive(Debug, ToSchema, Serialize, Deserialize)]
+pub struct MaintenanceLog {
+    pub id: Option<Thing>,
+    pub motorcycle_id: Option<Thing>,
     #[schema(value_type = String)]
-    date: Date,
-    odometer_reading: u64,
-    description: String,
+    pub date: Option<DateTime<Local>>,
+    pub odometer_reading: Option<u64>,
+    pub description: Option<String>,
     #[schema(value_type = Vec<ReplacedPart>, inline)]
-    replaced_parts: Vec<ReplacedPart>,
+    pub replaced_parts: Option<Vec<ReplacedPart>>,
 }
