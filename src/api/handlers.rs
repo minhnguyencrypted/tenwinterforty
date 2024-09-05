@@ -1,10 +1,10 @@
 use crate::database::schemas::MaintenanceLog;
 use crate::database::{queries::AppDatabase, schemas::Motorcycle};
 use axum::extract::Path;
-use axum::http::{response, StatusCode};
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
-use chrono::{DateTime, Local};
+use chrono::Local;
 use surrealdb::sql::Thing;
 
 pub async fn get_motorcycle_by_id(
@@ -143,7 +143,7 @@ pub async fn create_maintenance_log_by_mc_id(
             }
             None => Err((
                 StatusCode::NOT_FOUND,
-                Json(format!("Maintenance log entry with id {} not found", id)),
+                Json(format!("Motorcycle with id {} not found", id)),
             )),
         },
         Err(err) => {

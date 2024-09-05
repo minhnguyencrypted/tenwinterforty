@@ -2,6 +2,7 @@ use crate::database::{
     connect_db,
     schemas::{MaintenanceLog, Motorcycle},
 };
+use api::handlers;
 use axum::{
     routing::{delete, get, post, put},
     Router,
@@ -28,12 +29,16 @@ async fn main() {
 
     let app = Router::new()
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
-        .route("/motorcycle/:id", get(api::handlers::get_motorcycle_by_id))
-        .route("/motorcycle", post(api::handlers::create_motorcycle))
-        .route("/motorcycle/:id", put(api::handlers::update_motorcycle))
-        .route("/motorcycle/:id", delete(api::handlers::delete_motorcycle))
-        .route("/maintenance/:id", get(api::handlers::get_maintenance_log))
-        .route("/maintenance", post(api::handlers::create_maintenance_log));
+        .route("/motorcycle/:id", get(handlers::get_motorcycle_by_id))
+        .route("/motorcycle", post(handlers::create_motorcycle))
+        .route("/motorcycle/:id", put(handlers::update_motorcycle))
+        .route("/motorcycle/:id", delete(handlers::delete_motorcycle))
+        .route("/maintenance/:id", get(handlers::get_maintenance_log))
+        .route("/maintenance", post(handlers::create_maintenance_log))
+        .route(
+            "/motorcycle/:id/maintenance",
+            post(handlers::create_maintenance_log_by_mc_id),
+        );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
     axum::serve(listener, app).await.unwrap();
