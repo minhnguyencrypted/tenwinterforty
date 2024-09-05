@@ -5,27 +5,27 @@ use super::{
 use surrealdb::{sql::Thing, Error};
 
 pub struct AppDatabase {
-    motorcycle_table: String,
-    maintenance_log: String,
+    mc_table: String,
+    mtn_table: String,
 }
 
 impl AppDatabase {
     pub fn new() -> Self {
         AppDatabase {
-            motorcycle_table: String::from("motorcycles"),
-            maintenance_log: String::from("maintenance"),
+            mc_table: String::from("motorcycles"),
+            mtn_table: String::from("maintenance"),
         }
     }
 
     pub async fn get_motorcycle(&self, id: &str) -> Result<Option<Motorcycle>, Error> {
         let response: Result<Option<Motorcycle>, surrealdb::Error> =
-            DB.select((&self.motorcycle_table, String::from(id))).await;
+            DB.select((&self.mc_table, String::from(id))).await;
         response
     }
 
     pub async fn create_motorcycle(&self, motorcycle: Motorcycle) -> Result<Vec<Thing>, Error> {
         let response: Result<Vec<Motorcycle>, surrealdb::Error> =
-            DB.create(&self.motorcycle_table).content(motorcycle).await;
+            DB.create(&self.mc_table).content(motorcycle).await;
         match response {
             Ok(mcs) => {
                 let mc_things: Vec<Thing> =
@@ -41,10 +41,8 @@ impl AppDatabase {
         id: &str,
         motorcycle: Motorcycle,
     ) -> Result<Option<Thing>, Error> {
-        let response: Result<Option<Motorcycle>, Error> = DB
-            .update((&self.motorcycle_table, id))
-            .content(motorcycle)
-            .await;
+        let response: Result<Option<Motorcycle>, Error> =
+            DB.update((&self.mc_table, id)).content(motorcycle).await;
         match response {
             Ok(mc) => match mc {
                 Some(mc) => Ok(Some(mc.id.unwrap())),
@@ -55,8 +53,7 @@ impl AppDatabase {
     }
 
     pub async fn delete_motorcycle(&self, id: &str) -> Result<Option<Thing>, Error> {
-        let response: Result<Option<Motorcycle>, Error> =
-            DB.delete((&self.motorcycle_table, id)).await;
+        let response: Result<Option<Motorcycle>, Error> = DB.delete((&self.mc_table, id)).await;
         match response {
             Ok(mc) => match mc {
                 Some(mc) => Ok(mc.id),
@@ -66,14 +63,12 @@ impl AppDatabase {
         }
     }
 
-    pub async fn create_maintenance_log(
+    pub async fn create_maintenance_record(
         &self,
         maintenance_log: MaintenanceRecord,
     ) -> Result<Vec<Thing>, Error> {
-        let response: Result<Vec<MaintenanceRecord>, Error> = DB
-            .create(&self.maintenance_log)
-            .content(maintenance_log)
-            .await;
+        let response: Result<Vec<MaintenanceRecord>, Error> =
+            DB.create(&self.mtn_table).content(maintenance_log).await;
         match response {
             Ok(logs) => {
                 let log_things: Vec<Thing> =
@@ -84,22 +79,25 @@ impl AppDatabase {
         }
     }
 
-    pub async fn get_maintenance_log(&self, id: &str) -> Result<Option<MaintenanceRecord>, Error> {
+    pub async fn get_maintenance_record(
+        &self,
+        id: &str,
+    ) -> Result<Option<MaintenanceRecord>, Error> {
         let response: Result<Option<MaintenanceRecord>, Error> =
-            DB.select((&self.maintenance_log, id)).await;
+            DB.select((&self.mtn_table, id)).await;
         match response {
             Ok(opt_log) => Ok(opt_log),
             Err(err) => Err(err),
         }
     }
 
-    pub async fn get_maintenance_log_by_mc_id(
+    pub async fn get_maintenance_record_by_mc_id(
         &self,
         mc_id: &str,
     ) -> Result<Vec<MaintenanceRecord>, Error> {
         let mut result = DB
             .query("select * from $mtn_table where motorcycle_id = $mc_id")
-            .bind(("mtn_table", &self.maintenance_log))
+            .bind(("mtn_table", &self.mtn_table))
             .bind(("mc_id", mc_id))
             .await;
         match result {

@@ -93,11 +93,11 @@ pub async fn delete_motorcycle(
     }
 }
 
-pub async fn get_maintenance_log(
+pub async fn get_maintenance_record(
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     let db = AppDatabase::new();
-    match db.get_maintenance_log(&id).await {
+    match db.get_maintenance_record(&id).await {
         Ok(log) => match log {
             Some(log_entry) => Ok((StatusCode::OK, Json(log_entry))),
             None => Err((
@@ -112,7 +112,7 @@ pub async fn get_maintenance_log(
     }
 }
 
-pub async fn create_maintenance_log(
+pub async fn create_maintenance_record(
     Json(mut payload): Json<MaintenanceRecord>,
 ) -> Result<(StatusCode, Json<Vec<Thing>>), (StatusCode, Json<String>)> {
     let db = AppDatabase::new();
@@ -120,7 +120,7 @@ pub async fn create_maintenance_log(
         None => payload.date = Some(Local::now()),
         Some(_) => (),
     }
-    match db.create_maintenance_log(payload).await {
+    match db.create_maintenance_record(payload).await {
         Ok(things) => Ok((StatusCode::CREATED, Json(things))),
         Err(err) => {
             eprint!("{:#?}", err);
@@ -129,7 +129,7 @@ pub async fn create_maintenance_log(
     }
 }
 
-pub async fn create_maintenance_log_by_mc_id(
+pub async fn create_maintenance_record_by_mc_id(
     Path(id): Path<String>,
     Json(mut payload): Json<MaintenanceRecord>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
@@ -138,7 +138,7 @@ pub async fn create_maintenance_log_by_mc_id(
         Ok(opt_mc) => match opt_mc {
             Some(mc) => {
                 payload.motorcycle_id = mc.id;
-                create_maintenance_log(Json(payload)).await
+                create_maintenance_record(Json(payload)).await
             }
             None => Err((
                 StatusCode::NOT_FOUND,

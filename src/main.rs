@@ -33,11 +33,11 @@ async fn main() {
         .route("/motorcycle", post(handlers::create_motorcycle))
         .route("/motorcycle/:id", put(handlers::update_motorcycle))
         .route("/motorcycle/:id", delete(handlers::delete_motorcycle))
-        .route("/maintenance/:id", get(handlers::get_maintenance_log))
-        .route("/maintenance", post(handlers::create_maintenance_log))
+        .route("/maintenance/:id", get(handlers::get_maintenance_record))
+        .route("/maintenance", post(handlers::create_maintenance_record))
         .route(
             "/motorcycle/:id/maintenance",
-            post(handlers::create_maintenance_log_by_mc_id),
+            post(handlers::create_maintenance_record_by_mc_id),
         );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
