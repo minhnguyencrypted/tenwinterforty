@@ -176,3 +176,22 @@ pub async fn get_maintenance_records_by_mc_id(
         }
     }
 }
+
+pub async fn delete_maintenance_record(
+    Path(id): Path<String>,
+) -> Result<StatusCode, (StatusCode, Json<String>)> {
+    let db = AppDatabase::new();
+    match db.delete_maintenance_record(&id).await {
+        Ok(opt_thing) => match opt_thing {
+            Some(_) => Ok(StatusCode::NO_CONTENT),
+            None => Err((
+                StatusCode::NOT_FOUND,
+                Json(format!("Maintenance record with id {} not found", &id)),
+            )),
+        },
+        Err(err) => {
+            eprintln!("{:#?}", err);
+            Err((StatusCode::BAD_REQUEST, Json("Bad request".to_string())))
+        }
+    }
+}

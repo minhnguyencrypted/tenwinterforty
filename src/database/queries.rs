@@ -2,8 +2,10 @@ use super::{
     schemas::{MaintenanceRecord, Motorcycle},
     DB,
 };
-use surrealdb::sql::Id;
-use surrealdb::{sql::Thing, Error};
+use surrealdb::{
+    sql::{Id, Thing},
+    Error,
+};
 
 pub struct AppDatabase {
     mc_table: String,
@@ -112,6 +114,18 @@ impl AppDatabase {
                     Ok(mtn_records)
                 }
                 Err(err) => Err(err),
+            },
+            Err(err) => Err(err),
+        }
+    }
+
+    pub async fn delete_maintenance_record(&self, id: &str) -> Result<Option<Thing>, Error> {
+        let result: Result<Option<MaintenanceRecord>, Error> =
+            DB.delete((&self.mtn_table, id)).await;
+        match result {
+            Ok(opt_record) => match opt_record {
+                Some(record) => Ok(record.id),
+                None => Ok(None),
             },
             Err(err) => Err(err),
         }

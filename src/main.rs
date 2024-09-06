@@ -34,6 +34,10 @@ async fn main() {
         .route("/motorcycle/:id", put(handlers::update_motorcycle))
         .route("/motorcycle/:id", delete(handlers::delete_motorcycle))
         .route("/maintenance/:id", get(handlers::get_maintenance_record))
+        .route(
+            "/maintenance/:id",
+            delete(handlers::delete_maintenance_record),
+        )
         .route("/maintenance", post(handlers::create_maintenance_record))
         .route(
             "/motorcycle/:id/maintenance",
