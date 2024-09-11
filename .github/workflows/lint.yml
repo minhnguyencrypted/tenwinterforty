@@ -1,0 +1,37 @@
+on: 
+  push:
+    paths:
+      - 'src/**'
+      - '.github/workflows/**'
+name: Run linting and unit tests on push
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    outputs: 
+      src: ${{ steps.rustfmt.outputs.src }}
+      infra: ${{ steps.rustfmt.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - name: Run clippy
+        run: cargo clippy --all -- -W warnings --verbose
+      - name: Run rustfmt
+        run: cargo fmt --all --verbose
+      - name: Check for changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            src:
+              - 'src/**'
+      - name: Commit changes when changed
+        if: steps.changes.outputs.src == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Automated formatting
+          commit_user_name: GitHub Actions bot
+          commit_user_email: github-actions-bot@example.com
+          commit_author: GitHub Actions bot <github-actions-bot@example.com>
