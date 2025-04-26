@@ -1,13 +1,13 @@
-on: 
+on:
   push:
     paths:
-      - 'src/**'
-      - '.github/workflows/**'
+      - "src/**"
+      - ".github/workflows/**"
 name: Run linting and unit tests on push
 jobs:
   lint-and-format:
     runs-on: ubuntu-latest
-    outputs: 
+    outputs:
       src: ${{ steps.rustfmt.outputs.src }}
       infra: ${{ steps.rustfmt.outputs.infra }}
     steps:
@@ -35,3 +35,4 @@ jobs:
           commit_user_name: GitHub Actions bot
           commit_user_email: github-actions-bot@example.com
           commit_author: GitHub Actions bot <github-actions-bot@example.com>
+          file_pattern: "*.rs"

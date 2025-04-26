@@ -23,3 +23,10 @@ pub struct MaintenanceRecord {
     pub odometer_reading: Option<u64>,
     pub description: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct User {
+    pub id: Option<Thing>,
+    pub username: Option<String>,
+    pub password: Option<String>,
+}
