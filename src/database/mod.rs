@@ -1,28 +1,11 @@
-use once_cell::sync::Lazy;
-use surrealdb::{
-    engine::remote::ws::{Client, Ws},
-    opt::auth::Root,
-    Surreal,
-};
+use diesel::prelude::*;
+use std::env;
 
-pub mod queries;
-pub mod schemas;
+pub mod models;
+pub mod schema;
 
-pub static DB: Lazy<Surreal<Client>> = Lazy::new(Surreal::init);
-
-pub async fn connect_db(
-    address: &str,
-    username: &str,
-    password: &str,
-    namespace: &str,
-    database: &str,
-) -> surrealdb::Result<()> {
-    DB.connect::<Ws>(address).await?;
-    DB.signin(Root {
-        username: username,
-        password: password,
-    })
-    .await?;
-    DB.use_ns(namespace).use_db(database).await?;
-    Ok(())
+pub fn establish_connection() -> PgConnection {
+    let pg_conn_string = env::var("PG_CONN_STRING").expect("PG_CONN_STRING must be set");
+    PgConnection::establish(&pg_conn_string)
+        .unwrap_or_else(|_| panic!("Error connecting to {}", pg_conn_string))
 }
